@@ -17,7 +17,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/line/line-bot-sdk-go/linebot"
 	"github.com/weizhe0422/SportsInfoBOT/cpblschedule"
@@ -62,13 +61,14 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				case "2. 本月賽事":
 					result := make([]cpblschedule.Match, 0)
 					result, _ = cpblschedule.ParseCPBLSchedule(2018, 9)
-					var resultString strings.Builder
+					var resultString string
 
 					for _, item := range result {
-						fmt.Fprint(&resultString, item)
+						tmpItem := item.Date + "/" + item.Location + "/" + item.Home + "(" + item.Home_score + ")" + "/" + item.Away + "(" + item.Away_score + ")"
+						resultString = resultString + tmpItem + "||"
 					}
 
-					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(resultString.String())).Do(); err != nil {
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(resultString)).Do(); err != nil {
 						log.Println(err)
 					}
 				}
